@@ -28,16 +28,20 @@ df_test = df_test[selected_f].reset_index(drop=True)
 
 scaler = MinMaxScaler()
 
+scaler.fit(df_full_train[['engine_size(l)', 
+                          'fuel_consumption_comb_(l/100_km)', 
+                          'fuel_consumption_comb_(mpg)']])
+
 df_full_train[['engine_size(l)', 
                'fuel_consumption_comb_(l/100_km)', 
-               'fuel_consumption_comb_(mpg)']] = scaler.fit_transform(df_full_train[['engine_size(l)', 
-                                                                                     'fuel_consumption_comb_(l/100_km)', 
-                                                                                     'fuel_consumption_comb_(mpg)']])
+               'fuel_consumption_comb_(mpg)']] = scaler.transform(df_full_train[['engine_size(l)', 
+                                                                                 'fuel_consumption_comb_(l/100_km)', 
+                                                                                 'fuel_consumption_comb_(mpg)']])
 df_test[['engine_size(l)', 
           'fuel_consumption_comb_(l/100_km)', 
           'fuel_consumption_comb_(mpg)']] = scaler.fit_transform(df_test[['engine_size(l)', 
-                                                                           'fuel_consumption_comb_(l/100_km)', 
-                                                                           'fuel_consumption_comb_(mpg)']])
+                                                                      'fuel_consumption_comb_(l/100_km)',
+                                                                      'fuel_consumption_comb_(mpg)']])
 y_full_train = np.log1p(y_full_train)
 y_test = np.log1p(y_test)
 
@@ -102,6 +106,6 @@ print(f'RMSE metric for XGBoost Regressor final model: {xgb_rmse}')
 # save the model
 
 with open(output_file, 'wb') as f_out:
-    pickle.dump((dv, model), f_out)
+    pickle.dump((dv, scaler, model), f_out)
 
 print(f'the model is saved to {output_file}')
