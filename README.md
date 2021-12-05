@@ -10,7 +10,7 @@ The idea of this project is to build the model in order to predict CO2 emissions
 
 Dataset provides model-specific fuel consumption ratings and estimated carbon dioxide emissions for new light-duty vehicles for retail sale in Canada.
 
-The dataset used in this project has been taken from [Kaggle](https://www.kaggle.com/debajyotipodder/co2-emission-by-vehicles?select=CO2+Emissions_Canada.csv). This Kaggle dataset is a compiled version of data provided by Government of Canada ([Original data](https://open.canada.ca/data/en/dataset/98f1a129-f628-4ce4-b24d-6f16bf24dd64#wb-auto-6)) and contains data for 7 years. Also, dataset and data description files have been uploaded to the project repository.
+The dataset used in this project has been taken from [Kaggle](https://www.kaggle.com/debajyotipodder/co2-emission-by-vehicles?select=CO2+Emissions_Canada.csv). This Kaggle dataset is a compiled version of data provided by Government of Canada ([Original data](https://open.canada.ca/data/en/dataset/98f1a129-f628-4ce4-b24d-6f16bf24dd64#wb-auto-6)) and contains data for 7 years. Also, dataset `co2_emissions.csv` and data description `data_description.csv` files have been uploaded to the project repository.
 
 ## Variables
 
@@ -92,3 +92,25 @@ The commands required to install `pipenv`, install all required dependencies and
 5. `python predict-test.py` - run in separate terminal to test server is working and predict as expected
 
 As the result two files were created: `Pipfile` and `Pipfile.lock`. These files are added to the current repository.
+
+# Contanerization with Docker
+
+I created `Dockerfile` which consists of the following:
+```
+FROM python:3.9-slim
+
+RUN pip install pipenv
+
+WORKDIR /app
+COPY ["Pipfile", "Pipfile.lock", "./"]
+
+RUN pipenv install --system --deploy
+
+COPY ["predict.py", "model_eta=0.1_max_depth=5_min_ch_w=5.bin", "./"]
+
+EXPOSE 9696
+
+ENTRYPOINT ["gunicorn", "--bind=0.0.0.0:9696", "predict:app"]
+```
+
+I created docker image by running the following command `docker build -t emissions .` and run docker container by executing following command `docker run -it --rm -p 9696:9696 emissions`. I tested the server running from the docker container and prediction by running this command from separate terminal `python predict-test.py`.
