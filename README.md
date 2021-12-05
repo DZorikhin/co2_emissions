@@ -74,3 +74,21 @@ Selected model is XGBoost Regressor based on chosen metric.
 # Train the final model and Predict (Flask deployment)
 
 In `train.py` file you may find data preprocessing, training the final model and saving it into a pickle file. `predict.py` file contains loading the model and serving it via a web service with Flask. When you run Flask application with the model you could test it by running `python predict-test.py` and get the following prediction `{'CO2 emissions (g/km)': 232}`.
+
+# Dependency and Environment management
+
+I decided to use `pipenv` as virtual environment manager. In order to run my Flask application with model for prediction the following libraries are required:
+- numpy
+- flask
+- gunicorn
+- scikit-learn=0.24.2
+- xgboost=1.4.2
+
+The commands required to install `pipenv`, install all required dependencies and activate `pipenv`:
+1. `pip install pipenv` - pipenv installation
+2. `pipenv install numpy flask gunicorn scikit-learn==0.24.2 xgboost==1.4.2` - required dependencies installation
+3. `pipenv shell` - activate the environment
+4. `gunicorn --bind 0.0.0.0:9696 predict:app` - run the server with model to predict
+5. `python predict-test.py` - run in separate terminal to test server is working and predict as expected
+
+As the result two files were created: `Pipfile` and `Pipfile.lock`. These files are added to the current repository.
