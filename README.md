@@ -70,3 +70,7 @@ Please refer to `notebook.ipynb` where you may find the following:
 Selected model is XGBoost Regressor based on chosen metric.
 
 **Please be aware that this project has been done on macOS.**
+
+# Train the final model and Predict (Flask deployment)
+
+In `train.py` file you may find data preprocessing, training the final model and saving it into a pickle file. `predict.py` file contains loading the model and serving it via a web service with Flask. When you run Flask application with the model you could test it by running `python predict-test.py` and get the following prediction `{'CO2 emissions (g/km)': 232}`.
