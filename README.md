@@ -134,7 +134,7 @@ RUN pipenv install --system --deploy
 
 COPY ["predict.py", "model_eta=0.1_max_depth=5_min_ch_w=5.bin", "./"]
 
-CMD gunicorn --bind 0.0.0.0:PORT predict:app
+CMD gunicorn --bind 0.0.0.0:<dollar_sign>PORT predict:app
 ```
 ## How to deploy app to Heroku
 
