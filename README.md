@@ -114,3 +114,40 @@ ENTRYPOINT ["gunicorn", "--bind=0.0.0.0:9696", "predict:app"]
 ```
 
 I created docker image by running the following command `docker build -t emissions .` and run docker container by executing following command `docker run -it --rm -p 9696:9696 emissions`. I tested the server running from the docker container and prediction by running this command from separate terminal `python predict-test.py`.
+
+# Deployment to the Cloud: Heroku
+
+*It is assumed that you already have Heroku account.*
+
+Due to the nature of how Heroku creates applications and specific requirements to the Dockerfile command I created separate folder with heroku-specific Dockerfile. You could find it in this repository under `cloud-deployment/` folder. 
+
+The content of the `Dockerfile` is different by only removing `EXPOSURE 9696` line and modifying last command which is specific to cloud deployment on Heroku `CMD gunicorn --bind 0.0.0.0:<dollar_sign>PORT predict:app`. The whole Dockerfile for cloud deployment:
+```
+FROM python:3.9-slim
+
+RUN pip install pipenv
+
+WORKDIR /app
+COPY ["Pipfile", "Pipfile.lock", "./"]
+
+RUN pipenv install --system --deploy
+
+COPY ["predict.py", "model_eta=0.1_max_depth=5_min_ch_w=5.bin", "./"]
+
+CMD gunicorn --bind 0.0.0.0:PORT predict:app
+```
+## How to deploy app to Heroku
+
+Make sure that you’re logged in to Heroku (`heroku login`) and then login to the Container Registry by running `heroku container:login`. Run the following commands:
+
+- `heroku apps:create emissions-prediction-dz` - create app with any name
+- `heroku container:push web` - build the image and push to Container Registry
+- `heroku container:release web` - release the image to your app
+
+## How to test app on Heroku
+
+Public endpoint to test: `https://emissions-prediction-dz.herokuapp.com/predict`. Please run the command `python predict-test-cloud.py` to test the model prediction. Based on technical car data provided in that file you should get the following result:
+```
+{'CO2 emissions (g/km)': 337}
+```
+**Be aware that it might take some time (couple of minutes) for the app to respond because it might require to launch the app on Heroku platform.**
